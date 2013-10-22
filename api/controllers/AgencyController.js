@@ -20,36 +20,44 @@ module.exports = {
   */
 	routes: function(req,res){
 
-	  Agency.findOne(req.param('id')).exec(function (err, agency) {
 
-	  	var routesCollection = {};
-	  	routesCollection.type = "FeatureCollection";
-	  	routesCollection.features = [];
-	  	var sql = 'select ST_AsGeoJSON(geom) as route_shape,route_id,route_short_name,route_long_name,route_color from "'+agency.current_datafile+'".routes'
-	  	Route.query(sql,{},function(err,data){
-	  		if (err) {
-	       res.send('{status:"error",message:"'+err+'"}',500);
-	       return console.log(err);
-	      }
-	      data.rows.forEach(function(route){
-	  			var routeFeature = {};
-	  			routeFeature.type="Feature";
-	  			routeFeature.geometry = JSON.parse(route.route_shape);
-	  			routeFeature.properties = {};
-	  			routeFeature.properties.route_id = route.route_id;
-	  			routeFeature.properties.route_short_name = route.route_short_name;
-	  			routeFeature.properties.route_long_name = route.route_long_name;
-	  			routeFeature.properties.route_color = route.route_color;
-	  			routesCollection.features.push(routeFeature);
-	  		});
-	  		var topology = topojson.topology({routes: routesCollection},{"property-transform":preserveProperties});
-	  		res.send(JSON.stringify(topology));
-	  		//res.json(routesCollection);
+	 	Agency.findOne(req.param('id')).exec(function (err, agency) {
+
+		  	var routesCollection = {};
+		  	routesCollection.type = "FeatureCollection";
+		  	routesCollection.features = [];
+		  	var sql = 'select ST_AsGeoJSON(geom) as route_shape,route_id,route_short_name,route_long_name,route_color from "'+agency.current_datafile+'".routes'
+		  	Route.query(sql,{},function(err,data){
+		  		if (err) {
+		       res.send('{status:"error",message:"'+err+'"}',500);
+		       return console.log(err);
+		      }
+		      data.rows.forEach(function(route){
+		  			var routeFeature = {};
+		  			routeFeature.type="Feature";
+		  			routeFeature.geometry = JSON.parse(route.route_shape);
+		  			routeFeature.properties = {};
+		  			routeFeature.properties.route_id = route.route_id;
+		  			routeFeature.properties.route_short_name = route.route_short_name;
+		  			routeFeature.properties.route_long_name = route.route_long_name;
+		  			routeFeature.properties.route_color = route.route_color;
+		  			routesCollection.features.push(routeFeature);
+		  		});
+		  		if(req.param('format') == 'geo'){
+		  			//JSON.stringify();
+		  			res.send(routesCollection);	
+		  		}else{
+		  			var topology = topojson.topology({routes: routesCollection},{"property-transform":preserveProperties});
+		  			res.send(topology);
+		  			//JSON.stringify()
+		  			
+		  		}
+		  		
+		  	});
 	  	});
-	  });
 	},
 	stops: function(req,res){
-  
+  	 
 	  Agency.findOne(req.param('id')).exec(function (err, agency) {
 
 	  	var stopsCollection = {};
@@ -72,9 +80,16 @@ module.exports = {
 	  			
 	  			stopsCollection.features.push(stopFeature);
 	  		});
-	  		var topology = topojson.topology({stops: stopsCollection},{"property-transform":preserveProperties});
-	  		res.send(JSON.stringify(topology));
+	  		
 	  		//res.json(routesCollection);
+	  		if(req.param('format') == 'geo'){
+		  			//JSON.stringify();
+		  			res.json(stopsCollection);	
+		  		}else{
+		  			var topology = topojson.topology({stops: stopsCollection},{"property-transform":preserveProperties});
+	  				res.json(topology);
+		  			//JSON.stringify()  			
+		  		}
 	  	});
 	  });
 	}
