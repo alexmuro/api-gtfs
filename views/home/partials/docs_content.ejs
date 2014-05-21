@@ -1,0 +1,329 @@
+
+      <div class="bs-docs-section">
+        <div class="page-header">
+          <h1 id="getting-started">Getting Started<small> using the API</small></h1>
+        </div>
+        <h3 id="in-the-browser">In the Browser</h3>
+        <p> There is no sign up or authentication required to use the GeoGTFS API. To use it in the browser, add the parameters you want to end of the API url (http://api.availabs.org/gtfs). For example this link will show a list of all agencies <code><a href="http://api.availabs.org/gtfs/agency" target="_blank">http://api.availabs.org/gtfs/agency/</a></code>
+
+        </p>
+        <h3 id="using-jquery">Using JQuery Ajax</h3>
+        <p>
+          The API allows CORS (Cross Origin Resource Sharing) so a very simple Ajax request is all you need to receive data.<br>
+          <br>
+          <code>
+<pre>
+$.ajax({
+  url:'http://api.availabs.org/gtfs/agency/',
+  dataType:'json'
+})
+.done(function(data){
+  console.log(data);
+  //do something with the data
+});
+</pre>
+          </code>
+
+        </p>
+      </div>
+
+      <!-- Agency
+      ================================================== -->
+      <div class="bs-docs-section">
+        <div class="page-header">
+          <h1 id="agency">Agency/<small> Agency Listing</small></h1>
+        </div>
+        <h3>http://api.availabs.org/gtfs/agency/</h3>
+        <p>
+        <h3 id="agency-output">Output</h3>
+        <code>
+          <pre>
+[
+  {
+    "id": 1,
+    "createdAt": "2013-10-15T17:19:18.000Z",
+    "updatedAt": "2013-10-15T17:19:18.000Z",
+    "date_last_updated": 1372150471,
+    "feed_baseurl": "http://www.actransit.org/google-transit-feed-specification/?did=5",
+    "name": "AC Transit",
+    "area": "",
+    "url": "http://www.actransit.org",
+    "country": "United States",
+    "state": "California",
+    "license_url": "http://www.actransit.org/data-terms-and-conditions/",
+    "dataexchange_url": "http://www.gtfs-data-exchange.com/agency/ac-transit/",
+    "date_added": 1312587614,
+    "is_official": 1,
+    "dataexchange_id": "ac-transit",
+    "current_datafile": "ac-transit_20130625_0854"
+  },
+  ...
+]
+        </pre>
+    </code>
+        </p>
+        <h3 id="agency-find">/find</h3>
+        <h3>http://api.availabs.org/gtfs/agency/find?:attribute=:value</h3>
+        <p>
+          You can use the find to search for agencies that meet specific criteria, for example
+          <code>http://api.availabs.org/gtfs/agency/?state=New%20York</code> returns all agencies in New York.
+          You can use this to search on any of the available parameters.
+        </p>
+        <h3 id="agency-id">/:id</h3>
+        <p>
+          <h3>http://api.availabs.org/gtfs/agency/:id</h3>
+
+          To select a particular agency, simply append the id of the agency.
+          <br><br>
+          <code>http://api.availabs.org/gtfs/agency/11</code>
+          <br><br>
+          returns<br>
+          <code>
+          <pre>
+{
+  "id": 11,
+  "createdAt": "2013-10-15T17:19:23.000Z",
+  "updatedAt": "2013-10-15T17:19:23.000Z",
+  "date_last_updated": 1378431092,
+  "feed_baseurl": "http://www.cdta.org/schedules_developer_tools.php",
+  "name": "CDTA",
+  "area": "Albany",
+  "url": "http://www.cdta.org",
+  "country": "United States",
+  "state": "New York",
+  "license_url": "",
+  "dataexchange_url": "http://www.gtfs-data-exchange.com/agency/cdta/",
+  "date_added": 1257787290,
+  "is_official": 1,
+  "dataexchange_id": "cdta",
+  "current_datafile": "cdta_20130906_0131"
+}
+            </pre>
+          </code>
+
+
+        </p>
+      </div>
+      <!-- Routes
+      ================================================== -->
+      <div class="bs-docs-section">
+        <div class="page-header">
+          <h1 id="routes">Routes<small> Routes Geography</small></h1>
+        </div>
+        <h3>http://api.availabs.org/gtfs/agency/:id/routes</h3>
+        <h3 id="routes-parameters">Parameters</h3>
+        <p> The output of routes by default is topojson. To get geojson output you can add <code>?format=geo</code>.
+
+        </p>
+        <h3 id="routes-output">Output</h3>
+        <p>
+          Topojson Output<br>
+          <code>
+<pre>
+{
+  "type": "Topology",
+  "objects": {
+    "routes": {
+      "type": "GeometryCollection",
+      "geometries": [
+        {
+          "type": "MultiLineString",
+          "properties": {
+            "route_id": "43",
+            "route_short_name": null,
+            "route_long_name": "Sausalito / San Francisco",
+            "route_color": "0033CC"
+          },
+          "arcs": [
+            [
+              0,
+              1
+            ],
+            ...
+          ]
+        },
+        ...
+      ]
+    }
+  },
+  "arcs": [
+    [
+      [
+        3636,
+        1991
+      ],
+      ...
+    ]
+  ],
+  "bbox": [
+    -122.509142,
+    37.736484,
+    -122.24427,
+    38.099724
+  ],
+  "transform": {
+    "scale": [
+      0.000026489848984898178,
+      0.00003632763276327679
+    ],
+    "translate": [
+      -122.509142,
+      37.736484
+    ]
+  }
+}
+</pre>
+          </code>
+<br>
+GeoJSON Output
+<code>
+<pre>
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              -122.412833,
+              37.808798
+            ],
+            ...
+          ],
+          ...    
+        ]
+      },
+      "properties": {
+        "route_id": "43",
+        "route_short_name": null,
+        "route_long_name": "Sausalito / San Francisco",
+        "route_color": "0033CC"
+      }
+    },
+    ...
+  ]
+}
+</pre>
+</code>
+        </p>
+      </div>
+       <!-- Stops
+      ================================================== -->
+      <div class="bs-docs-section">
+        <div class="page-header">
+          <h1 id="stops-">Stops<small> Stops Geography</small></h1>
+        </div>
+        <h3>http://api.availabs.org/gtfs/agency/:id/stops</h3>
+        <h3 id="stops-parameters">Parameters</h3>
+        <p> The output of stops by default is topojson. To get geojson output you can add <code>?format=geo</code>.
+        <h3 id="stops-output">Output</h3>
+        <p>
+          Topojson Output<br>
+          <code>
+<pre>
+{
+  "type": "Topology",
+  "objects": {
+    "routes": {
+      "type": "GeometryCollection",
+      "geometries": [
+        {
+          "type": "Point",
+          "properties": {
+            "stop_id": "10443",
+            "stop_code": null,
+            "stop_name": "S. Salado St. & N. 2nd St. (Veterans Memorial Park) "
+          },
+          "coordinates": [
+            1008,
+            4173
+          ]
+        },
+        ...
+      ]
+    }
+  },
+  "arcs": [],
+  "bbox": [
+    -122.509142,
+    37.736484,
+    -122.24427,
+    38.099724
+  ],
+  "transform": {
+    "scale": [
+      0.000026489848984898178,
+      0.00003632763276327679
+    ],
+    "translate": [
+      -122.509142,
+      37.736484
+    ]
+  }
+}
+</pre>
+          </code>
+<br>
+GeoJSON Output
+<code>
+<pre>
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -121.12996,
+          37.471848
+        ]
+      },
+      "properties": {
+        "stop_id": "10443",
+        "stop_code": null,
+        "stop_name": "S. Salado St. & N. 2nd St. (Veterans Memorial Park) "
+      }
+    },
+    ...
+  ]
+}
+</pre>
+</code>
+
+
+        </p>
+      </div>
+       <!-- Overview
+      ================================================== -->
+      <div class="bs-docs-section">
+        <div class="page-header">
+          <h1 id="docs-overview">About</h1>
+        </div>
+
+        <h3 id="docs-introduction">Overview</h3>
+        <p> The General Transit Feed Specification (GTFS) defines a common format for public transportation schedules and associated geographic information. GTFS, first conceived by Bibiana McHugh, an IT Manager at the TriMet transit agency in the Portland metropolitan area (Oregon) was developed by Google and Portland TriMet, and originally known as the Google Transit Feed Specification.</p>
+        
+        <p>Since it was initially launched for Trimet in December of 2005 hundreds of transit agencies around the globe have adopted GTFS to encode their service information. According to gtfs-data-exchange.com there are 692 who openly publish their GTFS feeds to the public. The goal of this API is twofold:  
+          <ol>
+            <li>Make it easier for developers to acces this information for web applications.</li>
+            <li>Extend the data set to allow transit agencies a tool to easily analyze their networks.</li>
+          </ol>
+        </p>
+
+        <h3 id="docs-data-sources">Data Sources</h3>
+        <p> This API is based off the <a href="http://gtfs-data-exchange.com">gtfs-data-exchange.com</a> API, however instead of simply providing a link to download a zipped GTFS file, we allow you to directly access the information in these files as well as additionaly information that we have processed using these files.
+        </p>
+
+            <p>Currently we have pulled the subset of the data files from gtfs-data-exchange.com which are from official agency in the United States. This pares the possible list of 692 GTFS feeds down to 263. We are using a slightly modified (less strict) version of the <a href="https://code.google.com/p/gtfsdb/">gtfsdb-load tool</a> created by Mike Gilligan at trimet to process these zip files into the database serving our API. Using this tool we have so far been able to successfully process 127 of these 263 GTFS feeds. We are working on improving the number of feeds that are successfully processed into our database, however some feeds which do not meet certain strict guidlines outlined in the <a href="http://code.google.com/transit/spec/transit_feed_specification.html">GTFS Specification.</a>
+            </p>
+
+            <p>
+              Additionally we are only using the most recent GTFS datafile for each agency. We intend to add archived datasets in the future. 
+            </p>
+
+      </div>
+  </div><!-- end role="main"-->

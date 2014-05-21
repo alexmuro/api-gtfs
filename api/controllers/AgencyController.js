@@ -32,10 +32,11 @@ module.exports = {
 		       res.send('{status:"error",message:"'+err+'"}',500);
 		       return console.log(err);
 		      }
-		      data.rows.forEach(function(route){
+		      data.rows.forEach(function(route,index){
 		  			var routeFeature = {};
 		  			routeFeature.type="Feature";
 		  			routeFeature.geometry = JSON.parse(route.route_shape);
+		  			routeFeature.id = index;
 		  			routeFeature.properties = {};
 		  			routeFeature.properties.route_id = route.route_id;
 		  			routeFeature.properties.route_short_name = route.route_short_name;
@@ -56,6 +57,40 @@ module.exports = {
 		  	});
 	  	});
 	},
+	routeSchedule: function(req,res){
+		if(typeof req.param('id') == 'undefined'){
+			res.send('{status:"error",message:"Missing parameter: id. (Agency)"}',500);		
+		}
+		if(typeof req.param('day') == 'undefined'){
+			res.send('{status:"error",message:"Missing parameter: day."}',500);
+		}
+		if(typeof req.param('route_id') == 'undefined'){
+			res.send('{status:"error",message:"Missing parameter: route_id."}',500);
+		}
+	 	Agency.findOne(req.param('id')).exec(function (err, agency) {
+
+		  	var routesCollection = {};
+		  	routesCollection.type = "FeatureCollection";
+		  	routesCollection.features = [];
+		  	var sql = "SELECT a.trip_id,a.arrival_time,a.stop_id,a.stop_sequence,b.direction_id "
+						+ "from \""+agency.current_datafile+"\".stop_times as a "
+						+ "join \""+agency.current_datafile+"\".trips as b "
+						+ "on b.trip_id = a.trip_id "
+						+ "join \""+agency.current_datafile+"\".calendar as c "
+						+ "on c.service_id = b.service_id "
+						+ "where route_id = '"+req.param('route_id')+"' "
+						+ "and c."+req.param('day')+" "
+						+ "order by trip_id,stop_sequence";
+			Route.query(sql,{},function(err,data){
+		  		if (err) {
+		       res.send('{status:"error",message:"'+err+'"}',500);
+		       return console.log(err);
+		      }
+		      return res.json(data.rows);
+		  	});
+	  	});
+	},
+
 	stops: function(req,res){
   	 
 	  Agency.findOne(req.param('id')).exec(function (err, agency) {
@@ -69,9 +104,10 @@ module.exports = {
 	       res.send('{status:"error",message:"'+err+'"}',500);
 	       return console.log(err);
 	      }
-	      data.rows.forEach(function(stop){
+	      data.rows.forEach(function(stop,index){
 	  			var stopFeature = {};
 	  			stopFeature.type="Feature";
+	  			stopFeature.id = index;
 	  			stopFeature.geometry = JSON.parse(stop.stop_shape);
 	  			stopFeature.properties = {};
 	  			stopFeature.properties.stop_id = stop.stop_id;
